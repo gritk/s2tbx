@@ -26,11 +26,13 @@ public class Sentinel2OrthoProductReaderProxy implements ProductReader {
     private Sentinel2OrthoProductReader reader;
     private static S2ProductCRSCache crsCache = new S2ProductCRSCache();
     private final S2OrthoProductReaderPlugIn readerPlugIn;
+    private final Sentinel2ProductReader.ProductInterpretation interpretation;
     private final String epsgCode;
 
 
-    public Sentinel2OrthoProductReaderProxy(S2OrthoProductReaderPlugIn readerPlugIn, String epsgCode) {
+    public Sentinel2OrthoProductReaderProxy(S2OrthoProductReaderPlugIn readerPlugIn, Sentinel2ProductReader.ProductInterpretation interpretation, String epsgCode) {
         this.readerPlugIn = readerPlugIn;
+        this.interpretation = interpretation;
         this.epsgCode = epsgCode;
     }
 
@@ -64,12 +66,12 @@ public class Sentinel2OrthoProductReaderProxy implements ProductReader {
             crsCache.ensureIsCached(file.getAbsolutePath());
             S2Config.Sentinel2ProductLevel level = crsCache.getProductLevel(file.getAbsolutePath());
 
-            if (level == S2Config.Sentinel2ProductLevel.L2A) {
-                reader = new Sentinel2L2AProductReader(readerPlugIn, epsgCode);
-            } else if (level == S2Config.Sentinel2ProductLevel.L1C) {
-                reader = new Sentinel2L1CProductReader(readerPlugIn, epsgCode);
+            if (level == S2Config.Sentinel2ProductLevel.L1C) {
+                reader = new Sentinel2L1CProductReader(readerPlugIn, interpretation, epsgCode);
+            } else if (level == S2Config.Sentinel2ProductLevel.L2A) {
+                reader = new Sentinel2L2AProductReader(readerPlugIn, interpretation, epsgCode);
             } else if (level == S2Config.Sentinel2ProductLevel.L3) {
-                reader = new Sentinel2L3ProductReader(readerPlugIn, epsgCode);
+                reader = new Sentinel2L3ProductReader(readerPlugIn, interpretation, epsgCode);
             } else {
                 throw new IOException("Invalid input");
             }

@@ -28,13 +28,23 @@ public class Sentinel2L3ProductReader  extends Sentinel2OrthoProductReader {
 
     static final String L3_CACHE_DIR = "l3-reader";
 
-    public Sentinel2L3ProductReader(ProductReaderPlugIn readerPlugIn, String epsgCode) {
-        super(readerPlugIn, epsgCode);
+    public Sentinel2L3ProductReader(ProductReaderPlugIn readerPlugIn, ProductInterpretation interpretation, String epsgCode) {
+        super(readerPlugIn, interpretation, epsgCode);
     }
 
     @Override
     public S2SpatialResolution getProductResolution() {
-        return getSpatialResolutionL3();
+        switch (interpretation) {
+            case RESOLUTION_10M:
+                return S2SpatialResolution.R10M;
+            case RESOLUTION_20M:
+                return S2SpatialResolution.R20M;
+            case RESOLUTION_60M:
+                return S2SpatialResolution.R60M;
+            case RESOLUTION_MULTI:
+                return getSpatialResolutionL3();
+        }
+        throw new IllegalStateException("Unknown product interpretation");
     }
 
     @Override
